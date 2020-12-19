@@ -7,15 +7,18 @@ import net.citizensnpcs.api.trait.TraitInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.HashMap;
 import java.util.logging.Level;
 
 public class MonOmbre extends JavaPlugin {
     public static BukkitTask task;
     private MonOmbre instance;
     public NPC ombre;
+    private HashMap<Player, Point> points;
 
     public MonOmbre getInstance() {
         return this.instance;
@@ -28,6 +31,7 @@ public class MonOmbre extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        this.
 
         getServer().getPluginManager().registerEvents(new MonOmbreListeners(this), this);
         //MonOmbre.task = new MonOmbreTask(instance).runTaskTimer((Plugin)this.instance, 1L, 1L);
@@ -50,5 +54,9 @@ public class MonOmbre extends JavaPlugin {
     public void onDisable() {
         ombre.despawn();
         System.out.println("[MonOmbre] Votre Ombre n'est plus Maléfique !");
+    }
+
+    public HashMap<Player, Point> getPoints(){
+        return this.points;
     }
 }

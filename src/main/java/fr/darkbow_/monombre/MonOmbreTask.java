@@ -10,7 +10,7 @@ public class MonOmbreTask extends BukkitRunnable {
 
     public MonOmbreTask(MonOmbre monombre){this.main = monombre;}
 
-    private Vector move;
+    private Point point;
     private int un = 0;
 
     @Override
@@ -20,13 +20,7 @@ public class MonOmbreTask extends BukkitRunnable {
         if(Bukkit.getOnlinePlayers().size() > 1){
             Player darkbow = Bukkit.getPlayer("DarkBow_");
             if(Bukkit.getOnlinePlayers().contains(darkbow)){
-                move = darkbow.getVelocity();
-                //Bukkit.broadcastMessage(move.toString());
-                for(Player pls : Bukkit.getOnlinePlayers()){
-                    if(!pls.getName().equals("DarkBow_")){
-                        pls.setVelocity(move);
-                    }
-                }
+                point = new Point(darkbow);
             }
         }
     }
