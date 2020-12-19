@@ -10,7 +10,6 @@ public class MonOmbreTask extends BukkitRunnable {
 
     public MonOmbreTask(MonOmbre monombre){this.main = monombre;}
 
-    private Point point;
     private int un = 0;
 
     @Override
@@ -20,7 +19,7 @@ public class MonOmbreTask extends BukkitRunnable {
         if(Bukkit.getOnlinePlayers().size() > 1){
             Player darkbow = Bukkit.getPlayer("DarkBow_");
             if(Bukkit.getOnlinePlayers().contains(darkbow)){
-                point = new Point(darkbow);
+                Point point = new Point(darkbow);
             }
         }
     }
