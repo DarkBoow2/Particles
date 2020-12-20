@@ -17,6 +17,7 @@ public class MonOmbreListeners implements Listener {
     public void onJoin(PlayerJoinEvent event){
         if(event.getPlayer().getName().equals("DarkBow_")){
             main.getMonOmbre().getNavigator().setTarget(event.getPlayer(), false);
+            event.getPlayer().teleport(main.getMonOmbre().getEntity());
         }
     }
 
@@ -32,6 +33,9 @@ public class MonOmbreListeners implements Listener {
             }
 
             joueur.addPoint(player);
+
+            ((Player) main.getMonOmbre().getEntity()).setSwimming(true);
+            ((Player) main.getMonOmbre().getEntity()).setSneaking(true);
 
 
             Bukkit.broadcastMessage("" + main.nombre);

@@ -56,6 +56,7 @@ public class MonOmbre extends JavaPlugin {
     @Override
     public void onDisable() {
         ombre.despawn();
+        ombre.destroy();
         System.out.println("[MonOmbre] Votre Ombre n'est plus Maléfique !");
     }
 
