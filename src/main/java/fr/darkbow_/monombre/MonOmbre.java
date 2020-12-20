@@ -63,8 +63,23 @@ public class MonOmbre extends JavaPlugin {
         return this.joueurs;
     }
 
-    public List<Point> getPlayerPoints(Player player){
-        List<Point> points = new ArrayList<Point>();
+    public Joueur getJoueur(Player player){
+        Joueur joueur = null;
+        if(joueurs.isEmpty()){
+            joueur = null;
+        } else {
+            for(Joueur j : joueurs){
+                if(j.getPlayer() == player){
+                    joueur = j;
+                }
+            }
+        }
+
+        return joueur;
+    }
+
+    public List<Player> getPlayerPoints(Player player){
+        List<Player> points = new ArrayList<Player>();
         if(getJoueurs().contains(new Joueur(player))){
             for(Joueur j : joueurs){
                 if(j.getPlayer() == player){

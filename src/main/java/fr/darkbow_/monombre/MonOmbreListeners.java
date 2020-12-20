@@ -24,7 +24,16 @@ public class MonOmbreListeners implements Listener {
     public void onMove(PlayerMoveEvent event){
         Player player = event.getPlayer();
         if(event.getPlayer().getName().equals("DarkBow_")){
-            Point point = new Point(player);
+            Joueur joueur = null;
+            if(main.getJoueur(player) == null){
+                joueur = new Joueur(player);
+            } else {
+                joueur = main.getJoueur(player);
+            }
+
+            joueur.addPoint(player);
+
+
             Bukkit.broadcastMessage("" + main.nombre);
             main.nombre++;
         }

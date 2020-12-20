@@ -17,7 +17,6 @@ public class MonOmbreTask extends BukkitRunnable {
         if(Bukkit.getOnlinePlayers().size() > 1){
             Player darkbow = Bukkit.getPlayer("DarkBow_");
             if(Bukkit.getOnlinePlayers().contains(darkbow)){
-                Point point = new Point(darkbow);
                 Bukkit.broadcastMessage("" + un);
                 un++;
             }
