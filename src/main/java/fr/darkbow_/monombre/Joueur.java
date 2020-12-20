@@ -6,6 +6,7 @@ import java.util.List;
 
 public class Joueur {
     private MonOmbre main;
+    int test = 0;
 
     public Joueur(MonOmbre monombre){this.main = monombre;}
     private List<Point> playerpoints;
