@@ -21,6 +21,7 @@ public class MonOmbre extends JavaPlugin {
     private MonOmbre instance;
     public NPC ombre;
     private List<Joueur> joueurs;
+    public int nombre = 1;
 
     public MonOmbre getInstance() {
         return this.instance;

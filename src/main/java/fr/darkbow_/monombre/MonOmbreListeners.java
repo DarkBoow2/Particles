@@ -1,5 +1,6 @@
 package fr.darkbow_.monombre;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,6 +25,8 @@ public class MonOmbreListeners implements Listener {
         Player player = event.getPlayer();
         if(event.getPlayer().getName().equals("DarkBow_")){
             Point point = new Point(player);
+            Bukkit.broadcastMessage("" + main.nombre);
+            main.nombre++;
         }
     }
 }
