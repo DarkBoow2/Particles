@@ -7,13 +7,19 @@ public class Point {
 
     public Point(MonOmbre monombre){this.main = monombre;}
 
-    Player player;
+    private Player player;
+
+
     Point(Player player){
         this.player = player;
-        main.getPoints().put(player, this);
-    }
+        if(!main.getJoueurs().contains(new Joueur(player))){
+            main.getJoueurs().add(new Joueur(player));
+        }
 
-    public Player getPlayer(){
-        return this.player;
+        for(Joueur joueur : main.getJoueurs()){
+            if(joueur.getPlayer() == player){
+                joueur.getPoints().add(this);
+            }
+        }
     }
 }

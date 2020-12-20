@@ -14,12 +14,12 @@ public class MonOmbreTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        //Bukkit.broadcastMessage("" + un);
-        //un++;
         if(Bukkit.getOnlinePlayers().size() > 1){
             Player darkbow = Bukkit.getPlayer("DarkBow_");
             if(Bukkit.getOnlinePlayers().contains(darkbow)){
                 Point point = new Point(darkbow);
+                Bukkit.broadcastMessage("" + un);
+                un++;
             }
         }
     }

@@ -11,14 +11,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 
 public class MonOmbre extends JavaPlugin {
     public static BukkitTask task;
     private MonOmbre instance;
     public NPC ombre;
-    private HashMap<Player, Point> points;
+    private List<Joueur> joueurs;
 
     public MonOmbre getInstance() {
         return this.instance;
@@ -31,7 +33,7 @@ public class MonOmbre extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        this.
+        this.joueurs = new ArrayList<Joueur>();
 
         getServer().getPluginManager().registerEvents(new MonOmbreListeners(this), this);
         //MonOmbre.task = new MonOmbreTask(instance).runTaskTimer((Plugin)this.instance, 1L, 1L);
@@ -56,7 +58,20 @@ public class MonOmbre extends JavaPlugin {
         System.out.println("[MonOmbre] Votre Ombre n'est plus Maléfique !");
     }
 
-    public HashMap<Player, Point> getPoints(){
-        return this.points;
+    public List<Joueur> getJoueurs(){
+        return this.joueurs;
+    }
+
+    public List<Point> getPlayerPoints(Player player){
+        List<Point> points = new ArrayList<Point>();
+        if(getJoueurs().contains(new Joueur(player))){
+            for(Joueur j : joueurs){
+                if(j.getPlayer() == player){
+                    points = j.getPoints();
+                }
+            }
+        }
+
+        return points;
     }
 }
