@@ -30,5 +30,12 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.citizensnpcs:citizens-v1_14_R1:2.0.27-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.citizensnpcs:citizens-v1_15_R1:2.0.27-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.citizensnpcs:citizens-v1_16_R3:2.0.27-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec-http:4.1.56.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-common:4.1.56.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-buffer:4.1.56.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport:4.1.56.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-resolver:4.1.56.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec:4.1.56.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-handler:4.1.56.Final" level="project" />
   </component>
 </module>
