@@ -2,3 +2,9 @@ name: VaguesdeMonstres
 author: DarkBow_
 version: 0.1
 main: fr.darkbow_.vaguesdemonstres.VaguesdeMonstres
+commands:
+  vaguesdemonstres:
+    description: Active les vagues de monstres
+    permission: vaguesdemonstres.admin
+    aliases: [vdm, monsterwaves, mw]
+    usage: /<command> start

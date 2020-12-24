@@ -1,5 +1,6 @@
 package fr.darkbow_.vaguesdemonstres;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -15,11 +16,12 @@ public class VaguesdeMonstres extends JavaPlugin {
     public static BukkitTask task;
     private VaguesdeMonstres instance;
     public int timer = 0;
-    private List<Player> survivants = new ArrayList<>();
-    private HashMap<Player, List<EntityType>> monstres = new HashMap<>();
+    private List<Player> survivants;
+    private HashMap<Player, List<EntityType>> monstres;
     private HashSet<Material> bad_blocks;
     public int monstresbasiques = 60; //5 minutes = 300
     public int monstresvener = 180; //20 minutes = 1200
+    public boolean VaguesdeMonstres = false;
 
     public VaguesdeMonstres getInstance() {
         return this.instance;
@@ -29,11 +31,26 @@ public class VaguesdeMonstres extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
+        this.survivants = new ArrayList<>();
+        this.monstres = new HashMap<>();
+
+        List<EntityType> darkbow = new ArrayList<>();
+        darkbow.add(EntityType.SPIDER);
+        monstres.put(Bukkit.getPlayer("DarkBow_"), darkbow);
+        survivants.add(Bukkit.getPlayer("DarkBow_"));
+
+        Random r = new Random();
+
+        int entite = 700;
+        System.out.println("Test = " + entite);
+
         this.bad_blocks = new HashSet<>();
         bad_blocks.add(Material.LAVA);
         bad_blocks.add(Material.FIRE);
 
-        task = new Taches(instance).runTaskTimer(instance, 20L, 20L);
+        getCommand("vaguesdemonstres").setExecutor(new CommandVaguesdeMonstres(this));
+        getServer().getPluginManager().registerEvents(new MonstresEvenement(this), this);
+
         System.out.println("[VaguesdeMonstres] Plugin Activé !!");
     }
 
