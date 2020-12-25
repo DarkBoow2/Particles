@@ -5,6 +5,8 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ public class MonstresEvenement implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event){
-        if(main.VaguesdeMonstres){
+        if(main.VaguesdeMonstres && !main.EstEnPause){
             if(VaguesdeMonstres.task.isCancelled()){
                 VaguesdeMonstres.task = new Taches(main.getInstance()).runTaskTimer(main.getInstance(), 20L, 20L);
             }
@@ -33,5 +35,10 @@ public class MonstresEvenement implements Listener {
                 main.getMonstres().put(player, entitytype);
             }
         }
+    }
+
+    @EventHandler
+    public void onSpawn(PlayerEggThrowEvent event){
+        event.getEgg().setBounce(true);
     }
 }

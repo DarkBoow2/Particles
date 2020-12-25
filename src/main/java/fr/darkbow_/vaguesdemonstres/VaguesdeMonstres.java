@@ -19,9 +19,12 @@ public class VaguesdeMonstres extends JavaPlugin {
     private List<Player> survivants;
     private HashMap<Player, List<EntityType>> monstres;
     private HashSet<Material> bad_blocks;
-    public int monstresbasiques = 60; //5 minutes = 300
-    public int monstresvener = 180; //20 minutes = 1200
+    public int monstresbasiques = 600; //5 minutes = 300
+    public int monstresbasiquesinitial = 600;
+    public int monstresvener = 900; //20 minutes = 1200
+    public int monstresvenerinitial = 900;
     public boolean VaguesdeMonstres = false;
+    public boolean EstEnPause = false;
 
     public VaguesdeMonstres getInstance() {
         return this.instance;
@@ -34,15 +37,7 @@ public class VaguesdeMonstres extends JavaPlugin {
         this.survivants = new ArrayList<>();
         this.monstres = new HashMap<>();
 
-        List<EntityType> darkbow = new ArrayList<>();
-        darkbow.add(EntityType.SPIDER);
-        monstres.put(Bukkit.getPlayer("DarkBow_"), darkbow);
-        survivants.add(Bukkit.getPlayer("DarkBow_"));
-
         Random r = new Random();
-
-        int entite = 700;
-        System.out.println("Test = " + entite);
 
         this.bad_blocks = new HashSet<>();
         bad_blocks.add(Material.LAVA);

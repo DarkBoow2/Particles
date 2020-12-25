@@ -18,91 +18,75 @@ public class Taches extends BukkitRunnable {
 
     @Override
     public void run() {
-        if(main.VaguesdeMonstres){
+        if(main.VaguesdeMonstres && !main.EstEnPause){
+            if(main.timer%main.monstresbasiques == 0){
+                Bukkit.broadcastMessage("Les Hordes de Monstres Basiques apparaissent de plus en plus souvent maintenant !");
+                main.monstresbasiques -= 15;
+            }
+
+            if(main.timer%main.monstresvener == 0){
+                Bukkit.broadcastMessage("Les Monstres Terrifiants apparaissent de plus en plus souvent maintenant !");
+                main.monstresvener -= 25;
+            }
+
             if(Bukkit.getOnlinePlayers().size() > 0){
                 Random r = new Random();
                 //Toutes les 3 minutes y a un zombie, squelette, creeper, enderman ou araignée en plus
 
                 if(main.timer > 0){
-                    if(main.timer % 500 == 0){
-                        boolean basiques = false;
-                        if(main.monstresbasiques > 5){
-                            main.monstresbasiques = Math.round(main.monstresbasiques/2);
-                            basiques = true;
-                        }
-
-                        boolean vener = false;
-                        if(main.monstresvener > 10){
-                            main.monstresvener = Math.round(main.monstresvener/2);
-                            vener = true;
-                        }
-
-                        if(basiques && vener){
-                            Bukkit.broadcastMessage("Les monstres apparaissent de plus en plus souvent maintenant !");
-                        }
-                    }
-
-
-                    if(main.timer%60 == 0){
+                    if(main.timer%main.monstresbasiques == 0){
+                        Bukkit.broadcastMessage("Monstres Basiques : " + main.monstresbasiques);
                         boolean lightning_creeper;
 
-                        for(Player pls : Bukkit.getOnlinePlayers()){
-                            for(EntityType entitytype : main.getMonstres().get(pls)){
-                                Entity entity = pls.getWorld().spawnEntity(pls.getLocation(), entitytype);
-                                if(entitytype == EntityType.CREEPER){
-                                    lightning_creeper = r.nextBoolean();
-                                    if(lightning_creeper){
-                                        ((Creeper) entity).setPowered(true);
-                                    }
-                                }
-                            }
-
-                            if(!main.getSurvivants().contains(pls)){
-                                main.getSurvivants().add(pls);
-                                List<EntityType> entitieslist = new ArrayList<>();
-                                main.getMonstres().put(pls, entitieslist);
-                            }
-
-                            if(main.getSurvivants().contains(pls)){
-                                if(main.monstresbasiques > 5 && main.monstresvener > 10){
-                                    int entite = 7;
-                                    entite = r.nextInt(6);
-
-                                    EntityType etype = null;
-
-                                    switch (entite){
-                                        case 0:
-                                            etype = EntityType.ZOMBIE;
-                                            break;
-                                        case 1:
-                                            etype = EntityType.SKELETON;
-                                            break;
-                                        case 2:
-                                            etype = EntityType.SPIDER;
-                                            break;
-                                        case 3:
-                                            etype = EntityType.CAVE_SPIDER;
-                                            break;
-                                        case 4:
-                                            etype = EntityType.ENDERMAN;
-                                            break;
-                                        case 5:
-                                            etype = EntityType.CREEPER;
-                                            break;
-                                    }
-
-                                    main.getMonstres().get(pls).add(etype);
-
-
+                        if(Bukkit.getOnlinePlayers().size() > 0){
+                            for(Player pls : Bukkit.getOnlinePlayers()){
+                                if(!main.getSurvivants().contains(pls)){
+                                    main.getSurvivants().add(pls);
+                                    List<EntityType> entitieslist = new ArrayList<>();
+                                    main.getMonstres().put(pls, entitieslist);
                                 }
 
-                                if(!main.getMonstres().get(pls).isEmpty()){
-                                    for(EntityType entitytype : main.getMonstres().get(pls)){
-                                        Entity entity = pls.getWorld().spawnEntity(pls.getLocation(), entitytype);
-                                        if(entitytype == EntityType.CREEPER){
-                                            lightning_creeper = r.nextBoolean();
-                                            if(lightning_creeper){
-                                                ((Creeper) entity).setPowered(true);
+                                if(main.getSurvivants().contains(pls)){
+                                    if(main.monstresbasiques > 5 && main.monstresvener > 10){
+                                        int entite = 7;
+                                        entite = r.nextInt(6);
+
+                                        EntityType etype = null;
+
+                                        switch (entite){
+                                            case 0:
+                                                etype = EntityType.ZOMBIE;
+                                                break;
+                                            case 1:
+                                                etype = EntityType.SKELETON;
+                                                break;
+                                            case 2:
+                                                etype = EntityType.SPIDER;
+                                                break;
+                                            case 3:
+                                                etype = EntityType.CAVE_SPIDER;
+                                                break;
+                                            case 4:
+                                                etype = EntityType.ENDERMAN;
+                                                break;
+                                            case 5:
+                                                etype = EntityType.CREEPER;
+                                                break;
+                                        }
+
+                                        main.getMonstres().get(pls).add(etype);
+
+
+                                    }
+
+                                    if(!main.getMonstres().get(pls).isEmpty()){
+                                        for(EntityType entitytype : main.getMonstres().get(pls)){
+                                            Entity entity = pls.getWorld().spawnEntity(pls.getLocation(), entitytype);
+                                            if(entitytype == EntityType.CREEPER){
+                                                lightning_creeper = r.nextBoolean();
+                                                if(lightning_creeper){
+                                                    ((Creeper) entity).setPowered(true);
+                                                }
                                             }
                                         }
                                     }
@@ -110,10 +94,10 @@ public class Taches extends BukkitRunnable {
                             }
                         }
 
-                        Bukkit.broadcastMessage("§6§l1) §bSpawn de la Horde de Monstres Basiques");
+                        Bukkit.broadcastMessage("§bSpawn de la Horde de Monstres Basiques");
                     }
 
-                    if(main.timer%100 == 0){
+                    if(main.timer%main.monstresvener == 0){
                         for(Player pls : Bukkit.getOnlinePlayers()){
                             if(!main.getSurvivants().contains(pls)){
                                 main.getSurvivants().add(pls);
@@ -146,14 +130,18 @@ public class Taches extends BukkitRunnable {
                                     break;
                             }
 
-                            if(etype != null){
+                            if(etype == null){
+                                Bukkit.broadcastMessage("§cAucun Monstre Terrifiant apparu, c'est Dommage...");
+                            } else {
                                 pls.getWorld().spawnEntity(pls.getLocation(), etype);
-                                Bukkit.broadcastMessage("1");
-                                main.getMonstres().get(pls).add(etype);
+                                if(main.timer >= 3600){
+                                    main.getMonstres().get(pls).add(etype);
+                                    Bukkit.broadcastMessage("§cSpawn du Monstre Terrifiant §b§l+ §cAjout du Monstre à la §lHorde de monstres basiques\n§bT'as pas Fini le jeu assez vite, §6§lCHEH !!");
+                                } else {
+                                    Bukkit.broadcastMessage("§cSpawn du Monstre Terrifiant");
+                                }
                             }
                         }
-
-                        Bukkit.broadcastMessage("§6§l2) §bSpawn du Monstre Terrifiant");
                     }
                 }
 
@@ -176,8 +164,6 @@ public class Taches extends BukkitRunnable {
 
                 main.timer++;
                 Bukkit.broadcastMessage("Timer : " + main.timer);
-            } else {
-                cancel();
             }
         } else {
             cancel();
