@@ -5,6 +5,5 @@ main: fr.darkbow_.vaguesdemonstres.VaguesdeMonstres
 commands:
   vaguesdemonstres:
     description: Active les vagues de monstres
-    permission: vaguesdemonstres.admin
+    permission:
     aliases: [vdm, monsterwaves, mw]
-    usage: /<command> start

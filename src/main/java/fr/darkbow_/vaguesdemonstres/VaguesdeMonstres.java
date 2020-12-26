@@ -1,16 +1,17 @@
 package fr.darkbow_.vaguesdemonstres;
 
-import org.bukkit.Bukkit;
+import fr.darkbow_.vaguesdemonstres.scoreboard.ScoreboardSign;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class VaguesdeMonstres extends JavaPlugin {
     public static BukkitTask task;
@@ -18,13 +19,16 @@ public class VaguesdeMonstres extends JavaPlugin {
     public int timer = 0;
     private List<Player> survivants;
     private HashMap<Player, List<EntityType>> monstres;
+    private HashMap<Player, Boolean> veulentvoirinfos;
     private HashSet<Material> bad_blocks;
-    public int monstresbasiques = 600; //5 minutes = 300
-    public int monstresbasiquesinitial = 600;
-    public int monstresvener = 900; //20 minutes = 1200
-    public int monstresvenerinitial = 900;
+    public int monstresbasiques = 10; //5 minutes = 300
+    public int monstresbasiquesinitial = 10;
+    public int monstresvener = 15; //20 minutes = 1200
+    public int monstresvenerinitial = 15;
     public boolean VaguesdeMonstres = false;
     public boolean EstEnPause = false;
+
+    private Map<Player, ScoreboardSign> boards;
 
     public VaguesdeMonstres getInstance() {
         return this.instance;
@@ -34,8 +38,11 @@ public class VaguesdeMonstres extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
+        this.boards = new HashMap<>();
+
         this.survivants = new ArrayList<>();
         this.monstres = new HashMap<>();
+        this.veulentvoirinfos = new HashMap<>();
 
         Random r = new Random();
 
@@ -119,6 +126,57 @@ public class VaguesdeMonstres extends JavaPlugin {
             bool = !((block.getType().isSolid()) || (above.getType().isSolid()) || !(abovemoins.getType().isSolid()));
         } else {
             bool = !(bad_blocks.contains(below.getType()) || (bad_blocks.contains(above.getType())) || (block.getType().isSolid()) || (above.getType().isSolid()) || !(abovemoins.getType().isSolid()));
+        }
+
+        return bool;
+    }
+
+    public Map<Player, ScoreboardSign> getBoards(){
+        return this.boards;
+    }
+
+    public String getTimeFormat(long seconds) {
+        int jour = (int) TimeUnit.SECONDS.toDays(seconds);
+        long heures = TimeUnit.SECONDS.toHours(seconds) - (jour * 24);
+        long minute = TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60);
+        long seconde = TimeUnit.SECONDS.toSeconds(seconds) - (TimeUnit.SECONDS.toMinutes(seconds) * 60);
+
+        String textejour = "";
+        if(seconds >= 86400){
+            textejour = jour + "j:";
+        }
+
+        String texteheures = "";
+        if(seconds >= 3600){
+            texteheures = heures + "h";
+        }
+
+        String texteminutes = "";
+        if(seconds >= 60){
+            texteminutes = minute + "m";
+        }
+
+        return textejour + texteheures + texteminutes + seconde + "s";
+    }
+
+    public Map<Player, Boolean> VeulentVoirInfos(){
+        return this.veulentvoirinfos;
+    }
+
+    public boolean VeutVoirInfos(Player player){
+        if(!this.VeulentVoirInfos().containsKey(player)){
+            VeulentVoirInfos().put(player, true);
+        }
+
+        return VeulentVoirInfos().get(player);
+    }
+
+    public String bool(boolean b){
+        String bool = null;
+        if(b){
+            bool = ChatColor.GREEN + "§lAffiché";
+        } else {
+            bool = ChatColor.RED + "§lCaché";
         }
 
         return bool;

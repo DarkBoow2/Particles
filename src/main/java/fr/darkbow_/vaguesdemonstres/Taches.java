@@ -1,6 +1,8 @@
 package fr.darkbow_.vaguesdemonstres;
 
+import fr.darkbow_.vaguesdemonstres.scoreboard.ScoreboardSign;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -9,6 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class Taches extends BukkitRunnable {
@@ -19,23 +22,12 @@ public class Taches extends BukkitRunnable {
     @Override
     public void run() {
         if(main.VaguesdeMonstres && !main.EstEnPause){
-            if(main.timer%main.monstresbasiques == 0){
-                Bukkit.broadcastMessage("Les Hordes de Monstres Basiques apparaissent de plus en plus souvent maintenant !");
-                main.monstresbasiques -= 15;
-            }
-
-            if(main.timer%main.monstresvener == 0){
-                Bukkit.broadcastMessage("Les Monstres Terrifiants apparaissent de plus en plus souvent maintenant !");
-                main.monstresvener -= 25;
-            }
-
             if(Bukkit.getOnlinePlayers().size() > 0){
                 Random r = new Random();
                 //Toutes les 3 minutes y a un zombie, squelette, creeper, enderman ou araignée en plus
 
                 if(main.timer > 0){
                     if(main.timer%main.monstresbasiques == 0){
-                        Bukkit.broadcastMessage("Monstres Basiques : " + main.monstresbasiques);
                         boolean lightning_creeper;
 
                         if(Bukkit.getOnlinePlayers().size() > 0){
@@ -91,10 +83,10 @@ public class Taches extends BukkitRunnable {
                                         }
                                     }
                                 }
+
+                                pls.sendMessage("§bSpawn de la Horde de Monstres Basiques");
                             }
                         }
-
-                        Bukkit.broadcastMessage("§bSpawn de la Horde de Monstres Basiques");
                     }
 
                     if(main.timer%main.monstresvener == 0){
@@ -131,14 +123,14 @@ public class Taches extends BukkitRunnable {
                             }
 
                             if(etype == null){
-                                Bukkit.broadcastMessage("§cAucun Monstre Terrifiant apparu, c'est Dommage...");
+                                pls.sendMessage("§cAucun Monstre Terrifiant n'est apparu, c'est Dommage...");
                             } else {
                                 pls.getWorld().spawnEntity(pls.getLocation(), etype);
                                 if(main.timer >= 3600){
                                     main.getMonstres().get(pls).add(etype);
-                                    Bukkit.broadcastMessage("§cSpawn du Monstre Terrifiant §b§l+ §cAjout du Monstre à la §lHorde de monstres basiques\n§bT'as pas Fini le jeu assez vite, §6§lCHEH !!");
+                                    pls.sendMessage("§cSpawn du Monstre Terrifiant §b§l+ §cAjout du Monstre à la §lHorde de monstres basiques\n§bT'as pas Fini le jeu assez vite, §6§lCHEH !!");
                                 } else {
-                                    Bukkit.broadcastMessage("§cSpawn du Monstre Terrifiant");
+                                    pls.sendMessage("§cSpawn du Monstre Terrifiant");
                                 }
                             }
                         }
@@ -162,8 +154,41 @@ public class Taches extends BukkitRunnable {
                 //Les règles changent toutes les heures vers le temps/2 des autres règles
                 //Exemple : 4 zombies toutes les 5 minutes = 4 zombies toutes les 2min30
 
+                for(Map.Entry<Player, ScoreboardSign> boards : main.getBoards().entrySet()){
+                    boards.getValue().setLine(0, "§e");
+                    boards.getValue().setLine(1, "§6Timer : §r" + main.getTimeFormat(main.timer));
+                    boards.getValue().setLine(2, "§b");
+
+                    int monstres = 0;
+                    if(main.getMonstres().containsKey(boards.getKey())){
+                        if(main.getMonstres().get(boards.getKey()).size() > 0){
+                            monstres = main.getMonstres().get(boards.getKey()).size();
+                        }
+                    }
+                    String pluriel = "";
+                    if(monstres > 1){
+                        pluriel = "s";
+                    }
+
+                    boards.getValue().setLine(3, ChatColor.AQUA + "Horde : " + ChatColor.WHITE + monstres + " " + "Monstre" + pluriel);
+                    boards.getValue().setLine(4, "§d");
+
+                    int tempsrestant = -1;
+                    int restantbasique = -1;
+                    int restantvener = -1;
+
+                    restantbasique = main.monstresbasiques - main.timer%main.monstresbasiques;
+                    restantvener = main.monstresvener - main.timer%main.monstresvener;
+                    if(restantbasique <= restantvener){
+                        tempsrestant = restantbasique;
+                    } else {
+                        tempsrestant = restantvener;
+                    }
+
+                    boards.getValue().setLine(5, ChatColor.BLUE + "Prochain Spawn : " + ChatColor.WHITE + main.getTimeFormat(tempsrestant));
+                }
+
                 main.timer++;
-                Bukkit.broadcastMessage("Timer : " + main.timer);
             }
         } else {
             cancel();
