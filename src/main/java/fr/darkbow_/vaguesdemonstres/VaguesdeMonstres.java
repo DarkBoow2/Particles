@@ -1,10 +1,12 @@
 package fr.darkbow_.vaguesdemonstres;
 
 import fr.darkbow_.vaguesdemonstres.scoreboard.ScoreboardSign;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,7 +22,7 @@ public class VaguesdeMonstres extends JavaPlugin {
     private List<Player> survivants;
     private HashMap<Player, List<EntityType>> monstres;
     private HashMap<Player, Boolean> veulentvoirinfos;
-    private HashSet<Material> bad_blocks;
+    private HashSet<Material> badblocks;
     public int monstresbasiques = 10; //5 minutes = 300
     public int monstresbasiquesinitial = 10;
     public int monstresvener = 15; //20 minutes = 1200
@@ -46,9 +48,9 @@ public class VaguesdeMonstres extends JavaPlugin {
 
         Random r = new Random();
 
-        this.bad_blocks = new HashSet<>();
-        bad_blocks.add(Material.LAVA);
-        bad_blocks.add(Material.FIRE);
+        this.badblocks = new HashSet<>();
+        badblocks.add(Material.LAVA);
+        badblocks.add(Material.FIRE);
 
         getCommand("vaguesdemonstres").setExecutor(new CommandVaguesdeMonstres(this));
         getServer().getPluginManager().registerEvents(new MonstresEvenement(this), this);
@@ -69,66 +71,39 @@ public class VaguesdeMonstres extends JavaPlugin {
         return monstres;
     }
 
-    public Location generateEntitySpawnLocation(EntityType entitytype, Location loc, int rayon){
-        Random random = new Random();
+    private static final Random RANDOM = new Random();
 
-        double x = random.nextInt(rayon);
-        double y = random.nextInt(2);
-        double z = random.nextInt(rayon);
-
-        int signe = random.nextInt(2);
-        if(signe == 0){
-            x = -x;
-        }
-        x += loc.getX();
-
-        signe = random.nextInt(2);
-        if(signe == 0){
-            y = -y;
-        }
-        y += loc.getY();
-
-        signe = random.nextInt(2);
-        if(signe == 0){
-            z = -z;
-        }
-
-        Location randomLocation = new Location(loc.getWorld(), x, y, z);
-        y = randomLocation.getWorld().getHighestBlockYAt(randomLocation);
-        randomLocation.setY(y);
-
-        while(!isLocationSafe(entitytype, randomLocation)){
-            generateEntitySpawnLocation(entitytype, loc, rayon);
-        }
-
-        return randomLocation;
+    public static <T extends Entity> T spawnEntity(EntityType entityType, Location location, int xRadius, int yRadius)
+    {
+        return spawnEntity(entityType, location, xRadius, yRadius, 1);
     }
 
-    public boolean isLocationSafe(EntityType entitytype, Location location){
-        int x = location.getBlockX();
-        int y = location.getBlockY();
-        int z = location.getBlockZ();
+    public static <T extends Entity> T spawnEntity(EntityType entityType, Location location, int xRadius, int yRadius, int xMin)
+    {
+        int angle = RANDOM.nextInt(360);
+        xRadius = RANDOM.nextInt(xRadius)+xMin;
+        Location position = new Location(location.getWorld(), location.getX() + (xRadius * Math.cos(angle)), location.getY(), location.getZ() + (xRadius * Math.sin(angle)));
 
-        Block block = location.getWorld().getBlockAt(x, y, z);
-        Block below = location.getWorld().getBlockAt(x,y - 1, z);
-        Block above = location.getWorld().getBlockAt(x,y + 1, z);
-        Block abovemoins = location.getWorld().getBlockAt(x,y - 3, z);
+        int downPosition = getNearestSafeBlock(location, yRadius, false);
+        int upPosition = getNearestSafeBlock(location, yRadius, true);
 
-        boolean bool = false;
-        HashSet<Material> listenoire = this.bad_blocks;
+        return (T) ((downPosition == upPosition && downPosition == -1) ? location.getWorld().spawnEntity(location, entityType) : location.getWorld().spawnEntity(position.add(0, Math.min(downPosition, upPosition) + 1,0), entityType));
+    }
 
-        if(entitytype == EntityType.BLAZE){
-            listenoire.remove(Material.LAVA);
-            listenoire.remove(Material.FIRE);
+    private static int getNearestSafeBlock(Location location, int yRadius, boolean up)
+    {
+        int pass = 0;
+        for(int y = 0; y < yRadius; y++)
+        {
+            Block block = location.getBlock().getRelative(0, up ? y : -y, 0);
+            if(block == null){ break; }
+            if(!block.getType().equals(Material.AIR) && !block.getType().equals(Material.LAVA)
+                    && block.getRelative(0, 1, 0).getType().equals(Material.AIR)
+                    && block.getRelative(0, 2, 0).getType().equals(Material.AIR)
+            ){ return pass; }
+            pass++;
         }
-
-        if(listenoire.isEmpty()){
-            bool = !((block.getType().isSolid()) || (above.getType().isSolid()) || !(abovemoins.getType().isSolid()));
-        } else {
-            bool = !(bad_blocks.contains(below.getType()) || (bad_blocks.contains(above.getType())) || (block.getType().isSolid()) || (above.getType().isSolid()) || !(abovemoins.getType().isSolid()));
-        }
-
-        return bool;
+        return -1;
     }
 
     public Map<Player, ScoreboardSign> getBoards(){

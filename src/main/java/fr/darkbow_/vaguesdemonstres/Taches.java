@@ -73,7 +73,7 @@ public class Taches extends BukkitRunnable {
 
                                     if(!main.getMonstres().get(pls).isEmpty()){
                                         for(EntityType entitytype : main.getMonstres().get(pls)){
-                                            Entity entity = pls.getWorld().spawnEntity(pls.getLocation(), entitytype);
+                                            Entity entity = VaguesdeMonstres.spawnEntity(entitytype, pls.getLocation(), 5, 3);
                                             if(entitytype == EntityType.CREEPER){
                                                 lightning_creeper = r.nextBoolean();
                                                 if(lightning_creeper){
@@ -125,7 +125,7 @@ public class Taches extends BukkitRunnable {
                             if(etype == null){
                                 pls.sendMessage("§cAucun Monstre Terrifiant n'est apparu, c'est Dommage...");
                             } else {
-                                pls.getWorld().spawnEntity(pls.getLocation(), etype);
+                                Entity entity = VaguesdeMonstres.spawnEntity(etype, pls.getLocation(), 5, 3);
                                 if(main.timer >= 3600){
                                     main.getMonstres().get(pls).add(etype);
                                     pls.sendMessage("§cSpawn du Monstre Terrifiant §b§l+ §cAjout du Monstre à la §lHorde de monstres basiques\n§bT'as pas Fini le jeu assez vite, §6§lCHEH !!");

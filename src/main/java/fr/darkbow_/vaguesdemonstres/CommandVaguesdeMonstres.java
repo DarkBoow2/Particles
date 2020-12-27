@@ -28,7 +28,7 @@ public class CommandVaguesdeMonstres implements CommandExecutor {
                         main.VaguesdeMonstres = true;
                         main.EstEnPause = false;
                         VaguesdeMonstres.task = new Taches(main.getInstance()).runTaskTimer(main.getInstance(), 20L, 20L);
-                        Bukkit.broadcastMessage("§cVagues de Monstres §4§lActivées §b!");
+                        Bukkit.broadcastMessage("§cVagues de Monstres §4§lActivées §c!");
                         for(Player pls : Bukkit.getOnlinePlayers()){
                             if(main.VeutVoirInfos(pls) && !main.getBoards().containsKey(pls)) {
                                 ScoreboardSign sb = new ScoreboardSign(pls, "§c§lVagues de Monstres");
@@ -108,7 +108,7 @@ public class CommandVaguesdeMonstres implements CommandExecutor {
                             main.getMonstres().clear();
                         }
 
-                        if(main.getBoards().isEmpty()){
+                        if(!main.getBoards().isEmpty()){
                             for(Player pls : main.getBoards().keySet()){
                                 main.getBoards().get(pls).destroy();
                                 main.getBoards().remove(pls);
@@ -117,7 +117,7 @@ public class CommandVaguesdeMonstres implements CommandExecutor {
 
                         main.timer = 0;
 
-                        Bukkit.broadcastMessage("§cVagues de Monstres §a§l§bDésactivées §b!");
+                        Bukkit.broadcastMessage("§cVagues de Monstres §6§lDésactivées §c!");
                     } else {
                         sender.sendMessage("§cLes Vagues de Monstres ne sont pas Activées.");
                     }
