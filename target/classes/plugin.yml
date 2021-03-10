@@ -3,3 +3,5 @@ author: DarkBow_
 version: 0.1
 main: fr.darkbow_.animalsarrow.AnimalsArrow
 api-version: 1.16
+depend:
+  - ProtocolLib

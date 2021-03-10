@@ -1,15 +1,18 @@
 package fr.darkbow_.animalsarrow;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+
+import java.util.Objects;
 
 public class AnimalsArrowEvent implements Listener {
     private AnimalsArrow main;
@@ -19,10 +22,15 @@ public class AnimalsArrowEvent implements Listener {
     @EventHandler
     public void onArrowShoot(EntityShootBowEvent event){
         if(event.getEntity() instanceof Player){
+            /*for(Player pls : Bukkit.getOnlinePlayers()){
+                main.entityHider.toggleEntity(pls, event.getProjectile());
+            }*/
+
             Player player = (Player) event.getEntity();
+            /*main.entityHider.toggleEntity(player, event.getProjectile());*/
 
             org.bukkit.inventory.meta.Damageable bowdurability = (org.bukkit.inventory.meta.Damageable) event.getBow().getItemMeta();
-            player.sendMessage("Durabilité : " + bowdurability.getDamage());
+            /*player.sendMessage("Durabilité : " + bowdurability.getDamage());*/
             /*bowdurability.setDamage(bowdurability.getDamage()-1);
             if(bowdurability.getDamage() == 0){
                 event.getBow().setAmount(event.getBow().getAmount()-1);
@@ -40,6 +48,7 @@ public class AnimalsArrowEvent implements Listener {
                 }
 
                 if(otherhand != null && otherhand.getType() != Material.AIR){
+                    /*event.setCancelled(true);*/
                     /*if(event.getProjectile() instanceof Arrow){
                         ((Arrow) event.getProjectile()).setBounce(false);
                     }*/
@@ -48,7 +57,6 @@ public class AnimalsArrowEvent implements Listener {
                     main.throwItem(player, otherhand, event.getProjectile());
 
                     player.updateInventory();
-                    Vector vector = player.getLocation().getDirection();
                 }
             }
         }
@@ -56,19 +64,54 @@ public class AnimalsArrowEvent implements Listener {
 
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event){
-        if(event.getEntity().getScoreboardTags().contains("NoFallDamage")){
+        if(event.getEntity().getScoreboardTags().contains("AnimalArrow")){
             event.setCancelled(true);
-            Bukkit.broadcastMessage("Cause : " + event.getCause().name());
+            /*Bukkit.broadcastMessage("Cause : " + event.getCause().name());*/
             if(event.getCause() == EntityDamageEvent.DamageCause.FALL){
-                Bukkit.broadcastMessage("yooo");
-                event.getEntity().removeScoreboardTag("NoFallDamage");
+                event.getEntity().removeScoreboardTag("AnimalArrow");
             }
         }
     }
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event){
-        if(event.getEntity().getScoreboardTags().contains("NoFallDamage")){
+        if(event.getEntity().getScoreboardTags().contains("AnimalArrow")){
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void OnProjectileHit(ProjectileHitEvent event){
+        if(main.getCustomprojectiles().containsKey(event.getEntity())){
+            if(main.getCustomprojectiles().get(event.getEntity()).getScoreboardTags().contains("AnimalArrow")){
+                main.getCustomprojectiles().get(event.getEntity()).removeScoreboardTag("AnimalArrow");
+                ((LivingEntity) main.getCustomprojectiles().get(event.getEntity())).setCollidable(true);
+                ((LivingEntity) main.getCustomprojectiles().get(event.getEntity())).setAI(true);
+                Objects.requireNonNull(event.getHitBlock()).setType(Material.GREEN_WOOL);
+                main.getCustomprojectiles().get(event.getEntity()).leaveVehicle();
+                main.getCustomprojectiles().remove(event.getEntity());
+                event.getEntity().remove();
+            }
+        }
+    }
+
+    @EventHandler
+    public void onVehicleEnter(VehicleEnterEvent event){
+        if(main.getCustomprojectiles().containsValue(event.getVehicle())){
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onVehicleExit(VehicleExitEvent event){
+        if(main.getCustomprojectiles().containsValue(event.getVehicle())){
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onHorseEjectYou(HorseJumpEvent event){
+        if(main.getCustomprojectiles().containsValue(event.getEntity())){
             event.setCancelled(true);
         }
     }

@@ -14,11 +14,15 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class AnimalsArrow extends JavaPlugin {
+    public EntityHider entityHider;
+
+    private static final int TICKS_PER_SECOND = 20;
+
     private AnimalsArrow instance;
 
     private Map<Player, ScoreboardSign> boards;
 
-    private Map<Arrow, Entity> customprojectiles;
+    private Map<Entity, Entity> customprojectiles;
 
     public AnimalsArrow getInstance() {
         return this.instance;
@@ -28,17 +32,19 @@ public class AnimalsArrow extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
+        entityHider = new EntityHider(this, EntityHider.Policy.BLACKLIST);
+
         this.boards = new HashMap<>();
         this.customprojectiles = new HashMap<>();
 
         getServer().getPluginManager().registerEvents(new AnimalsArrowEvent(this), this);
 
-        System.out.println("[VaguesdeMonstres] Plugin Activé !!");
+        System.out.println("[AnimalsArrow] Plugin Enabled!");
     }
 
     @Override
     public void onDisable() {
-        System.out.println("[VaguesdeMonstres] Plugin Désactivé !");
+        System.out.println("[AnimalsArrow] Plugin Disabled!");
     }
 
     private static final Random RANDOM = new Random();
@@ -51,10 +57,14 @@ public class AnimalsArrow extends JavaPlugin {
         Entity projectile = null;
         Egg egg = null;
         Snowball snowball = null;
+        Location loc = e.getLocation();
+        loc.setPitch(player.getLocation().getPitch());
+        loc.setYaw(player.getLocation().getYaw());
+
 /*        Bukkit.broadcastMessage("§e§lType Item : §b" + it.getType().toString());*/
         if(it.getType().toString().endsWith("SPAWN_EGG")) {
 /*            Bukkit.broadcastMessage("§6Egg Meta : §a" + it.getType().toString().replace("_SPAWN_EGG", ""));*/
-            projectile = e.getWorld().spawnEntity(e.getLocation(), Objects.requireNonNull(EntityType.fromName(it.getType().toString().replace("_SPAWN_EGG", ""))));
+            projectile = e.getWorld().spawnEntity(loc, Objects.requireNonNull(EntityType.fromName(it.getType().toString().replace("_SPAWN_EGG", ""))));
 /*            if(((SpawnEggMeta) it.getItemMeta()).getSpawnedType() == null) {
                 projectile = e.getWorld().dropItem(e.getLocation(), it);
             } else {
@@ -63,13 +73,13 @@ public class AnimalsArrow extends JavaPlugin {
         } else if(it.getType() == Material.EGG || it.getType() == Material.SNOWBALL) {
             if(it.getType() == Material.EGG) {
                 /*egg = player.launchProjectile(Egg.class);*/
-                egg = (Egg) e.getWorld().spawnEntity(e.getLocation(), EntityType.EGG);
+                egg = (Egg) e.getWorld().spawnEntity(loc, EntityType.EGG);
             } else if(it.getType() == Material.SNOWBALL) {
                 /*snowball = player.launchProjectile(Snowball.class);*/
-                snowball = (Snowball) e.getWorld().spawnEntity(e.getLocation(), EntityType.SNOWBALL);
+                snowball = (Snowball) e.getWorld().spawnEntity(loc, EntityType.SNOWBALL);
             }
         } else if(it.getType().toString().contains("BOAT")) {
-            Boat boat = (Boat) e.getWorld().spawnEntity(e.getLocation(), EntityType.BOAT);
+            Boat boat = (Boat) e.getWorld().spawnEntity(loc, EntityType.BOAT);
             TreeSpecies treespecies = TreeSpecies.GENERIC;
             if(it.getType() == Material.ACACIA_BOAT){ treespecies = TreeSpecies.ACACIA; }
             if(it.getType() == Material.BIRCH_BOAT){ treespecies = TreeSpecies.BIRCH; }
@@ -80,15 +90,34 @@ public class AnimalsArrow extends JavaPlugin {
             boat.setWoodType(treespecies);
             projectile = boat;
         } else {
-            projectile = e.getWorld().dropItem(e.getLocation(), it);
+            projectile = e.getWorld().dropItem(loc, it);
         }
 
 
         if(projectile != null ) {
+            if(projectile instanceof Vehicle){
+                Bukkit.broadcastMessage("Vehicle");
+                projectile.setPassenger(player);
+            }
+
+            projectile.addScoreboardTag("AnimalArrow");
+            customprojectiles.put(e, projectile);
+
             projectile.setVelocity(e.getVelocity());
-            projectile.addScoreboardTag("NoFallDamage");
-            e.setPassenger(projectile);
-            ((LivingEntity) projectile).setCollidable(false);
+
+            if(projectile instanceof Horse){
+                ((Horse) projectile).setTamed(true);
+                ((Horse) projectile).setLeashHolder(player);
+                ((Horse) projectile).getInventory().setSaddle(new ItemStack(Material.SADDLE));
+            }
+
+            if(!(projectile instanceof Flying) && !(projectile instanceof Chicken)){
+                if(projectile instanceof LivingEntity){
+                    e.setPassenger(projectile);
+                    ((LivingEntity) projectile).setAI(false);
+                    ((LivingEntity) projectile).setCollidable(false);
+                }
+            }
         }
 
         if(egg != null) {
@@ -115,7 +144,7 @@ public class AnimalsArrow extends JavaPlugin {
         return bool;
     }
 
-    public Map<Arrow, Entity> getCustomprojectiles() {
+    public Map<Entity, Entity> getCustomprojectiles() {
         return customprojectiles;
     }
 }
