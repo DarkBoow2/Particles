@@ -1,0 +1,14 @@
+enable: true
+extra:
+  spawn_eggs: true
+  eggs: true
+  snowballs: true
+  boats: true
+automount:
+  enable: true
+  entities:
+    horses:
+      enable: true
+      auto_tame: true
+      auto_saddle: true
+    boats: true
