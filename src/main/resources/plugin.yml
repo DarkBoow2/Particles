@@ -5,3 +5,8 @@ main: fr.darkbow_.animalsarrow.AnimalsArrow
 api-version: 1.16
 depend:
   - ProtocolLib
+commands:
+  animalsarrow:
+    description: Manage the Animals Arrow Plugin
+    permission:
+    aliases: [aa, animalsa, arrowanimals, aarrow]

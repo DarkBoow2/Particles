@@ -1,4 +1,5 @@
 enable: true
+projectile-rides-arrow: true
 extra:
   spawn_eggs: true
   eggs: true
@@ -12,3 +13,4 @@ automount:
       auto_tame: true
       auto_saddle: true
     boats: true
+player-launch: true

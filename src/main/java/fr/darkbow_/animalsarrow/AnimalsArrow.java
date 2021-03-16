@@ -1,5 +1,6 @@
 package fr.darkbow_.animalsarrow;
 
+import fr.darkbow_.animalsarrow.commands.CommandAnimalsArrow;
 import fr.darkbow_.animalsarrow.scoreboard.ScoreboardSign;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -41,7 +42,13 @@ public class AnimalsArrow extends JavaPlugin {
         this.customprojectiles = new HashMap<>();
         this.pluginoptions = new HashMap<>();
 
+        String status;
         pluginoptions.put("enable", getConfig().getString("enable"));
+        if(!Boolean.parseBoolean(pluginoptions.get("enable"))){
+            status = " But Not Activated Yet!\nChange it in the config and restart your server or execute the /aa toggle command when the server will be completely started.";
+        }
+        pluginoptions.put("projectile-rides-arrow", getConfig().getString("projectile-rides-arrow"));
+        pluginoptions.put("player-launch", getConfig().getString("player-launch"));
         ConfigurationSection extrasection = getConfig().getConfigurationSection("extra");
         for(String extra : getConfig().getConfigurationSection("extra").getKeys(false)){
             getPluginoptions().put("extra." + extra, extrasection.getString(extra));
@@ -64,8 +71,9 @@ public class AnimalsArrow extends JavaPlugin {
         }
 
         getServer().getPluginManager().registerEvents(new AnimalsArrowEvent(this), this);
+        getCommand("animalsarrow").setExecutor(new CommandAnimalsArrow(this));
 
-        System.out.println("[AnimalsArrow] Plugin Enabled!");
+        System.out.println("[AnimalsArrow] Plugin ON!");
     }
 
     @Override
@@ -89,44 +97,59 @@ public class AnimalsArrow extends JavaPlugin {
 
         boolean item = true;
 
-        if(it.getType().toString().endsWith("SPAWN_EGG")){
-            if(Boolean.parseBoolean(getPluginoptions().get("extra.spawn_eggs"))){
-                item = false;
-
-                projectile = e.getWorld().spawnEntity(loc, Objects.requireNonNull(EntityType.fromName(it.getType().toString().replace("_SPAWN_EGG", ""))));
+        if(it == null || it.getType() == Material.AIR){
+            item = false;
+            if(Boolean.parseBoolean(getPluginoptions().get("player-launch"))){
+                projectile = player;
             }
-        }
+        } else {
+            if(it.getType().toString().endsWith("SPAWN_EGG")){
+                if(Boolean.parseBoolean(getPluginoptions().get("extra.spawn_eggs"))){
+                    item = false;
 
-        if(it.getType() == Material.EGG){
-            if(Boolean.parseBoolean(getPluginoptions().get("extra.eggs"))){
-                item = false;
-
-                egg = (Egg) e.getWorld().spawnEntity(loc, EntityType.EGG);
+                    projectile = e.getWorld().spawnEntity(loc, Objects.requireNonNull(EntityType.fromName(it.getType().toString().replace("_SPAWN_EGG", ""))));
+                }
             }
-        }
 
-        if(it.getType() == Material.SNOWBALL){
-            if(Boolean.parseBoolean(getPluginoptions().get("extra.snowballs"))){
-                item = false;
+            if(it.getType() == Material.EGG){
+                if(Boolean.parseBoolean(getPluginoptions().get("extra.eggs"))){
+                    item = false;
 
-                snowball = (Snowball) e.getWorld().spawnEntity(loc, EntityType.SNOWBALL);
+                    if(Boolean.parseBoolean(getPluginoptions().get("projectile-rides-arrow"))){
+                        egg = (Egg) e.getWorld().spawnEntity(loc, EntityType.EGG);
+                    } else {
+                        egg = player.launchProjectile(Egg.class);
+                    }
+                }
             }
-        }
 
-        if(it.getType().toString().contains("BOAT")){
-            if(Boolean.parseBoolean(getPluginoptions().get("extra.boats"))){
-                item = false;
+            if(it.getType() == Material.SNOWBALL){
+                if(Boolean.parseBoolean(getPluginoptions().get("extra.snowballs"))){
+                    item = false;
 
-                Boat boat = (Boat) e.getWorld().spawnEntity(loc, EntityType.BOAT);
-                TreeSpecies treespecies = TreeSpecies.GENERIC;
-                if(it.getType() == Material.ACACIA_BOAT){ treespecies = TreeSpecies.ACACIA; }
-                if(it.getType() == Material.BIRCH_BOAT){ treespecies = TreeSpecies.BIRCH; }
-                if(it.getType() == Material.DARK_OAK_BOAT){ treespecies = TreeSpecies.DARK_OAK; }
-                if(it.getType() == Material.JUNGLE_BOAT){ treespecies = TreeSpecies.JUNGLE; }
-                if(it.getType() == Material.SPRUCE_BOAT){ treespecies = TreeSpecies.REDWOOD; }
-                if(it.getType() == Material.OAK_BOAT){ treespecies = TreeSpecies.GENERIC; }
-                boat.setWoodType(treespecies);
-                projectile = boat;
+                    if(getPluginoptions().get("launch-mode").equalsIgnoreCase("riding")){
+                        snowball = (Snowball) e.getWorld().spawnEntity(loc, EntityType.SNOWBALL);
+                    } else {
+                        snowball = player.launchProjectile(Snowball.class);
+                    }
+                }
+            }
+
+            if(it.getType().toString().contains("BOAT")){
+                if(Boolean.parseBoolean(getPluginoptions().get("extra.boats"))){
+                    item = false;
+
+                    Boat boat = (Boat) e.getWorld().spawnEntity(loc, EntityType.BOAT);
+                    TreeSpecies treespecies = TreeSpecies.GENERIC;
+                    if(it.getType() == Material.ACACIA_BOAT){ treespecies = TreeSpecies.ACACIA; }
+                    if(it.getType() == Material.BIRCH_BOAT){ treespecies = TreeSpecies.BIRCH; }
+                    if(it.getType() == Material.DARK_OAK_BOAT){ treespecies = TreeSpecies.DARK_OAK; }
+                    if(it.getType() == Material.JUNGLE_BOAT){ treespecies = TreeSpecies.JUNGLE; }
+                    if(it.getType() == Material.SPRUCE_BOAT){ treespecies = TreeSpecies.REDWOOD; }
+                    if(it.getType() == Material.OAK_BOAT){ treespecies = TreeSpecies.GENERIC; }
+                    boat.setWoodType(treespecies);
+                    projectile = boat;
+                }
             }
         }
 
@@ -134,68 +157,113 @@ public class AnimalsArrow extends JavaPlugin {
             projectile = e.getWorld().dropItem(loc, it);
         }
 
-
         if(projectile != null ) {
-            projectile.addScoreboardTag("AnimalArrow");
             customprojectiles.put(e, projectile);
 
             projectile.setVelocity(e.getVelocity());
 
-            if(projectile instanceof Vehicle){
-                if(Boolean.parseBoolean(getPluginoptions().get("automount"))){
-                    boolean mount = false;
+            if(projectile instanceof Player){
+                if(!Boolean.parseBoolean(getPluginoptions().get("projectile-rides-arrow"))){
+                    projectile.addScoreboardTag("AnimalArrow");
+                }
+            } else {
+                if(projectile instanceof Vehicle){
+                    if(Boolean.parseBoolean(getPluginoptions().get("automount"))){
+                        boolean mount = false;
 
-                    if(projectile instanceof Horse && Boolean.parseBoolean(getPluginoptions().get("automount.entities.horses"))){
-                        mount = true;
-                        if(Boolean.parseBoolean(getPluginoptions().get("automount.entities.horses.auto_tame"))){
-                            ((Horse) projectile).setTamed(true);
-                            ((Horse) projectile).setLeashHolder(player);
+                        if(projectile instanceof Horse && Boolean.parseBoolean(getPluginoptions().get("automount.entities.horses"))){
+                            mount = true;
+                            if(Boolean.parseBoolean(getPluginoptions().get("automount.entities.horses.auto_tame"))){
+                                ((Horse) projectile).setTamed(true);
+                                ((Horse) projectile).setLeashHolder(player);
+                            }
+
+                            if(Boolean.parseBoolean(getPluginoptions().get("automount.entities.horses.auto_saddle"))){
+                                ((Horse) projectile).getInventory().setSaddle(new ItemStack(Material.SADDLE));
+                            }
                         }
 
-                        if(Boolean.parseBoolean(getPluginoptions().get("automount.entities.horses.auto_saddle"))){
-                            ((Horse) projectile).getInventory().setSaddle(new ItemStack(Material.SADDLE));
+                        if(projectile instanceof Boat && Boolean.parseBoolean(getPluginoptions().get("automount.entities.boats"))){
+                            mount = true;
+                        }
+
+                        if(mount){
+                            projectile.setPassenger(player);
                         }
                     }
+                }
 
-                    if(projectile instanceof Boat && Boolean.parseBoolean(getPluginoptions().get("automount.entities.boats"))){
-                        mount = true;
+                if(Boolean.parseBoolean(getPluginoptions().get("projectile-rides-arrow"))){
+                    if(projectile instanceof LivingEntity){
+                        ((LivingEntity) projectile).setAI(false);
+                        ((LivingEntity) projectile).setCollidable(false);
                     }
-
-                    if(mount){
-                        projectile.setPassenger(player);
+                } else {
+                    if(!(projectile instanceof Flying) && !(projectile instanceof Chicken)){
+                        if(projectile instanceof LivingEntity){
+                            projectile.addScoreboardTag("AnimalArrow");
+                        }
                     }
                 }
             }
 
-            if(!(projectile instanceof Flying) && !(projectile instanceof Chicken)){
-                if(projectile instanceof LivingEntity){
-                    e.setPassenger(projectile);
-                    ((LivingEntity) projectile).setAI(false);
-                    ((LivingEntity) projectile).setCollidable(false);
-                }
+            if(Boolean.parseBoolean(getPluginoptions().get("projectile-rides-arrow"))){
+                e.setPassenger(projectile);
             }
         }
 
         if(egg != null) {
             egg.setVelocity(e.getVelocity());
-            e.setPassenger(egg);
+            if(Boolean.parseBoolean(getPluginoptions().get("projectile-rides-arrow"))){
+                e.setPassenger(egg);
+            }
         }
 
         if(snowball != null) {
             snowball.setVelocity(e.getVelocity());
-            e.setPassenger(snowball);
+            if(Boolean.parseBoolean(getPluginoptions().get("projectile-rides-arrow"))){
+                e.setPassenger(snowball);
+            }
         }
     }
 
     public String bool(boolean b){
         String bool = null;
         if(b){
-            bool = ChatColor.GREEN + "§lAffiché";
+            bool = ChatColor.GREEN + "§a§lEnabled";
         } else {
-            bool = ChatColor.RED + "§lCaché";
+            bool = ChatColor.RED + "§c§lDisabled";
         }
 
         return bool;
+    }
+
+    public boolean consumeItem(Player player, int count, Material mat) {
+        Map<Integer, ? extends ItemStack> ammo = player.getInventory().all(mat);
+
+        int found = 0;
+        for (ItemStack stack : ammo.values())
+            found += stack.getAmount();
+        if (count > found)
+            return false;
+
+        for (Integer index : ammo.keySet()) {
+            ItemStack stack = ammo.get(index);
+
+            int removed = Math.min(count, stack.getAmount());
+            count -= removed;
+
+            if (stack.getAmount() == removed)
+                player.getInventory().setItem(index, null);
+            else
+                stack.setAmount(stack.getAmount() - removed);
+
+            if (count <= 0)
+                break;
+        }
+
+        player.updateInventory();
+        return true;
     }
 
     public Map<Entity, Entity> getCustomprojectiles() {
