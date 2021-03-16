@@ -103,6 +103,7 @@ public class AnimalsArrow extends JavaPlugin {
                 projectile = player;
             }
         } else {
+            it.setAmount(1);
             if(it.getType().toString().endsWith("SPAWN_EGG")){
                 if(Boolean.parseBoolean(getPluginoptions().get("extra.spawn_eggs"))){
                     item = false;
@@ -213,16 +214,22 @@ public class AnimalsArrow extends JavaPlugin {
         }
 
         if(egg != null) {
+            customprojectiles.put(e, egg);
             egg.setVelocity(e.getVelocity());
             if(Boolean.parseBoolean(getPluginoptions().get("projectile-rides-arrow"))){
                 e.setPassenger(egg);
+            } else {
+                egg.addScoreboardTag("AnimalArrow");
             }
         }
 
         if(snowball != null) {
+            customprojectiles.put(e, snowball);
             snowball.setVelocity(e.getVelocity());
             if(Boolean.parseBoolean(getPluginoptions().get("projectile-rides-arrow"))){
                 e.setPassenger(snowball);
+            } else {
+                snowball.addScoreboardTag("AnimalArrow");
             }
         }
     }

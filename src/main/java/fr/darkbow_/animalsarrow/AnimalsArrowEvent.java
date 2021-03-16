@@ -92,10 +92,17 @@ public class AnimalsArrowEvent implements Listener {
             if(main.getCustomprojectiles().containsKey(event.getEntity())){
                 if(main.getCustomprojectiles().get(event.getEntity()).getScoreboardTags().contains("AnimalArrow")){
                     main.getCustomprojectiles().get(event.getEntity()).removeScoreboardTag("AnimalArrow");
-                    ((LivingEntity) main.getCustomprojectiles().get(event.getEntity())).setCollidable(true);
-                    ((LivingEntity) main.getCustomprojectiles().get(event.getEntity())).setAI(true);
-                    main.getCustomprojectiles().remove(event.getEntity());
-                    event.getEntity().remove();
+                    if(main.getCustomprojectiles().get(event.getEntity()) instanceof LivingEntity){
+                        ((LivingEntity) main.getCustomprojectiles().get(event.getEntity())).setCollidable(true);
+                        ((LivingEntity) main.getCustomprojectiles().get(event.getEntity())).setAI(true);
+                        main.getCustomprojectiles().remove(event.getEntity());
+                        event.getEntity().remove();
+                    }
+
+                    if(main.getCustomprojectiles().get(event.getEntity()).getType() == EntityType.EGG || main.getCustomprojectiles().get(event.getEntity()).getType() == EntityType.SNOWBALL){
+                        main.getCustomprojectiles().get(event.getEntity()).leaveVehicle();
+                        main.getCustomprojectiles().remove(event.getEntity());
+                    }
                 }
             }
         }
