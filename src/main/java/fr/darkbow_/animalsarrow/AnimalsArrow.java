@@ -158,9 +158,7 @@ public class AnimalsArrow extends JavaPlugin {
             projectile = e.getWorld().dropItem(loc, it);
         }
 
-        if(projectile != null ) {
-            customprojectiles.put(e, projectile);
-
+        if(projectile != null) {
             projectile.setVelocity(e.getVelocity());
 
             if(projectile instanceof Player){
@@ -198,9 +196,10 @@ public class AnimalsArrow extends JavaPlugin {
                     if(projectile instanceof LivingEntity){
                         ((LivingEntity) projectile).setAI(false);
                         ((LivingEntity) projectile).setCollidable(false);
+                        projectile.addScoreboardTag("AnimalArrow");
                     }
                 } else {
-                    if(!(projectile instanceof Flying) && !(projectile instanceof Chicken)){
+                    if(!(projectile instanceof Flying) && !(projectile instanceof Chicken) && !(projectile instanceof Cat)){
                         if(projectile instanceof LivingEntity){
                             projectile.addScoreboardTag("AnimalArrow");
                         }
@@ -211,6 +210,8 @@ public class AnimalsArrow extends JavaPlugin {
             if(Boolean.parseBoolean(getPluginoptions().get("projectile-rides-arrow"))){
                 e.setPassenger(projectile);
             }
+
+            customprojectiles.put(e, projectile);
         }
 
         if(egg != null) {

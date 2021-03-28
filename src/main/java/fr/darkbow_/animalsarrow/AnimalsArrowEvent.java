@@ -1,5 +1,6 @@
 package fr.darkbow_.animalsarrow;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -20,7 +21,7 @@ public class AnimalsArrowEvent implements Listener {
         if(Boolean.parseBoolean(main.getPluginoptions().get("enable"))){
             if(event.getEntity() instanceof Player){
                 Player player = (Player) event.getEntity();
-                /*main.entityHider.toggleEntity(player, event.getProjectile());*/
+                main.entityHider.toggleEntity(player, event.getProjectile());
 
                 if(Boolean.parseBoolean(main.getPluginoptions().get("projectile-rides-arrow"))){
                     event.setConsumeItem(false);
@@ -88,21 +89,24 @@ public class AnimalsArrowEvent implements Listener {
 
     @EventHandler
     public void OnProjectileHit(ProjectileHitEvent event){
-        if(Boolean.parseBoolean(main.getPluginoptions().get("enable"))){
-            if(main.getCustomprojectiles().containsKey(event.getEntity())){
-                if(main.getCustomprojectiles().get(event.getEntity()).getScoreboardTags().contains("AnimalArrow")){
-                    main.getCustomprojectiles().get(event.getEntity()).removeScoreboardTag("AnimalArrow");
-                    if(main.getCustomprojectiles().get(event.getEntity()) instanceof LivingEntity){
-                        ((LivingEntity) main.getCustomprojectiles().get(event.getEntity())).setCollidable(true);
-                        ((LivingEntity) main.getCustomprojectiles().get(event.getEntity())).setAI(true);
-                        main.getCustomprojectiles().remove(event.getEntity());
-                        event.getEntity().remove();
+        if(event.getEntity() instanceof Arrow){
+            if(Boolean.parseBoolean(main.getPluginoptions().get("enable"))){
+                if(main.getCustomprojectiles().containsKey(event.getEntity())){
+                    if(main.getCustomprojectiles().get(event.getEntity()).getScoreboardTags().contains("AnimalArrow")){
+                        main.getCustomprojectiles().get(event.getEntity()).removeScoreboardTag("AnimalArrow");
+                        if(main.getCustomprojectiles().get(event.getEntity()) instanceof LivingEntity){
+                            ((LivingEntity) main.getCustomprojectiles().get(event.getEntity())).setCollidable(true);
+                            ((LivingEntity) main.getCustomprojectiles().get(event.getEntity())).setAI(true);
+                            main.getCustomprojectiles().get(event.getEntity()).leaveVehicle();
+                            main.getCustomprojectiles().remove(event.getEntity());
+                            event.getEntity().remove();
+                        } else if(main.getCustomprojectiles().get(event.getEntity()).getType() == EntityType.EGG || main.getCustomprojectiles().get(event.getEntity()).getType() == EntityType.SNOWBALL){
+                            main.getCustomprojectiles().get(event.getEntity()).leaveVehicle();
+                            main.getCustomprojectiles().remove(event.getEntity());
+                        }
                     }
 
-                    if(main.getCustomprojectiles().get(event.getEntity()).getType() == EntityType.EGG || main.getCustomprojectiles().get(event.getEntity()).getType() == EntityType.SNOWBALL){
-                        main.getCustomprojectiles().get(event.getEntity()).leaveVehicle();
-                        main.getCustomprojectiles().remove(event.getEntity());
-                    }
+                    event.getEntity().remove();
                 }
             }
         }
@@ -121,7 +125,9 @@ public class AnimalsArrowEvent implements Listener {
     public void onVehicleExit(VehicleExitEvent event){
         if(Boolean.parseBoolean(main.getPluginoptions().get("enable"))){
             if(main.getCustomprojectiles().containsValue(event.getVehicle())){
-                event.setCancelled(true);
+                if(!event.getVehicle().isOnGround()){
+                    event.setCancelled(true);
+                }
             }
         }
     }
