@@ -1,6 +1,5 @@
 package fr.darkbow_.animalsarrow;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -21,7 +20,7 @@ public class AnimalsArrowEvent implements Listener {
         if(Boolean.parseBoolean(main.getPluginoptions().get("enable"))){
             if(event.getEntity() instanceof Player){
                 Player player = (Player) event.getEntity();
-                main.entityHider.toggleEntity(player, event.getProjectile());
+                /*main.entityHider.toggleEntity(player, event.getProjectile());*/
 
                 if(Boolean.parseBoolean(main.getPluginoptions().get("projectile-rides-arrow"))){
                     event.setConsumeItem(false);

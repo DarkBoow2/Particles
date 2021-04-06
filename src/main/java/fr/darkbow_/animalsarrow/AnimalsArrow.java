@@ -3,22 +3,15 @@ package fr.darkbow_.animalsarrow;
 import fr.darkbow_.animalsarrow.commands.CommandAnimalsArrow;
 import fr.darkbow_.animalsarrow.scoreboard.ScoreboardSign;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class AnimalsArrow extends JavaPlugin {
     public EntityHider entityHider;
-
-    private static final int TICKS_PER_SECOND = 20;
 
     private AnimalsArrow instance;
 
@@ -42,7 +35,7 @@ public class AnimalsArrow extends JavaPlugin {
         this.customprojectiles = new HashMap<>();
         this.pluginoptions = new HashMap<>();
 
-        String status;
+        String status = null;
         pluginoptions.put("enable", getConfig().getString("enable"));
         if(!Boolean.parseBoolean(pluginoptions.get("enable"))){
             status = " But Not Activated Yet!\nChange it in the config and restart your server or execute the /aa toggle command when the server will be completely started.";
@@ -50,38 +43,37 @@ public class AnimalsArrow extends JavaPlugin {
         pluginoptions.put("projectile-rides-arrow", getConfig().getString("projectile-rides-arrow"));
         pluginoptions.put("player-launch", getConfig().getString("player-launch"));
         ConfigurationSection extrasection = getConfig().getConfigurationSection("extra");
-        for(String extra : getConfig().getConfigurationSection("extra").getKeys(false)){
-            getPluginoptions().put("extra." + extra, extrasection.getString(extra));
+        if(extrasection != null){
+            for(String extra : Objects.requireNonNull(getConfig().getConfigurationSection("extra")).getKeys(false)){
+                getPluginoptions().put("extra." + extra, extrasection.getString(extra));
+            }
         }
 
         getPluginoptions().put("automount", getConfig().getString("automount.enable"));
 
         ConfigurationSection EntitiesSection = getConfig().getConfigurationSection("automount.entities");
-        for(String entity : EntitiesSection.getKeys(false)){
-            if(entity.equals("horses")){
-                getPluginoptions().put("automount.entities." + entity, EntitiesSection.getString(entity + ".enable"));
-                System.out.println(EntitiesSection.getString(entity + ".enable"));
-                getPluginoptions().put("automount.entities.horses.auto_tame" + entity, EntitiesSection.getString(entity + ".auto_tame"));
-                System.out.println(EntitiesSection.getString(entity + ".auto_tame"));
-                getPluginoptions().put("automount.entities.horses.auto_saddle" + entity, EntitiesSection.getString(entity + ".auto_saddle"));
-                System.out.println(EntitiesSection.getString(entity + ".auto_saddle"));
-            } else {
-                getPluginoptions().put("automount.entities." + entity, EntitiesSection.getString(entity));
+        if(EntitiesSection != null){
+            for(String entity : EntitiesSection.getKeys(false)){
+                if(entity.equals("horses")){
+                    getPluginoptions().put("automount.entities." + entity, EntitiesSection.getString(entity + ".enable"));
+                    getPluginoptions().put("automount.entities.horses.auto_tame" + entity, EntitiesSection.getString(entity + ".auto_tame"));
+                    getPluginoptions().put("automount.entities.horses.auto_saddle" + entity, EntitiesSection.getString(entity + ".auto_saddle"));
+                } else {
+                    getPluginoptions().put("automount.entities." + entity, EntitiesSection.getString(entity));
+                }
             }
         }
 
         getServer().getPluginManager().registerEvents(new AnimalsArrowEvent(this), this);
-        getCommand("animalsarrow").setExecutor(new CommandAnimalsArrow(this));
+        Objects.requireNonNull(getCommand("animalsarrow")).setExecutor(new CommandAnimalsArrow(this));
 
-        System.out.println("[AnimalsArrow] Plugin ON!");
+        System.out.println("[AnimalsArrow] Plugin ON!" + status);
     }
 
     @Override
     public void onDisable() {
-        System.out.println("[AnimalsArrow] Plugin Disabled!");
+        System.out.println("[AnimalsArrow] Plugin OFF!");
     }
-
-    private static final Random RANDOM = new Random();
 
     public Map<Player, ScoreboardSign> getBoards(){
         return this.boards;
