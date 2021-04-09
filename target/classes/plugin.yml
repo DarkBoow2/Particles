@@ -1,12 +1,5 @@
-name: AnimalsArrow
+name: HeadDrops
 author: DarkBow_
-version: 0.1
-main: fr.darkbow_.animalsarrow.AnimalsArrow
+version: 1.0
+main: fr.darkbow_.headdrops.HeadDrops
 api-version: 1.16
-depend:
-  - ProtocolLib
-commands:
-  animalsarrow:
-    description: Manage the Animals Arrow Plugin
-    permission:
-    aliases: [aa, animalsa, arrowanimals, aarrow]

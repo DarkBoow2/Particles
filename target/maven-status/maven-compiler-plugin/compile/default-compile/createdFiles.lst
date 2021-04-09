@@ -1,11 +1,2 @@
-fr\darkbow_\animalsarrow\EntityHider$2.class
-fr\darkbow_\animalsarrow\scoreboard\ScoreboardSign$VirtualTeam.class
-fr\darkbow_\animalsarrow\scoreboard\ScoreboardSign.class
-fr\darkbow_\animalsarrow\commands\CommandAnimalsArrow.class
-fr\darkbow_\animalsarrow\AnimalsArrow.class
-fr\darkbow_\animalsarrow\EntityHider$Policy.class
-fr\darkbow_\animalsarrow\EntityHider.class
-fr\darkbow_\animalsarrow\scoreboard\ScoreboardSign$1.class
-fr\darkbow_\animalsarrow\EntityHider$1.class
-fr\darkbow_\animalsarrow\AnimalsArrowEvent.class
-fr\darkbow_\animalsarrow\EntityHider$3.class
+fr\darkbow_\headdrops\HeadDrops.class
+fr\darkbow_\headdrops\HeadDropsEvent.class
