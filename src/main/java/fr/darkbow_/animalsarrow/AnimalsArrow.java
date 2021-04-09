@@ -35,7 +35,7 @@ public class AnimalsArrow extends JavaPlugin {
         this.customprojectiles = new HashMap<>();
         this.pluginoptions = new HashMap<>();
 
-        String status = null;
+        String status = "";
         pluginoptions.put("enable", getConfig().getString("enable"));
         if(!Boolean.parseBoolean(pluginoptions.get("enable"))){
             status = " But Not Activated Yet!\nChange it in the config and restart your server or execute the /aa toggle command when the server will be completely started.";
