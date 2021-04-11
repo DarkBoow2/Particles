@@ -1,6 +1,11 @@
 package fr.darkbow_.headdrops;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class HeadDrops extends JavaPlugin {
 
@@ -10,10 +15,14 @@ public class HeadDrops extends JavaPlugin {
         return instance;
     }
 
+    public static BukkitTask task;
+    private Map<Player, Integer> particles;
+
     @Override
     public void onEnable() {
         instance = this;
-        saveDefaultConfig();
+
+        this.particles = new HashMap<>();
 
         getServer().getPluginManager().registerEvents(new HeadDropsEvent(this), this);
 
@@ -23,5 +32,9 @@ public class HeadDrops extends JavaPlugin {
     @Override
     public void onDisable() {
         System.out.println("[HeadDrops] Plugin OFF!");
+    }
+
+    public Map<Player, Integer> getParticles() {
+        return particles;
     }
 }
